@@ -40,6 +40,7 @@ final class ViewController: UIViewController,
         super.viewWillLayoutSubviews()
         
         gradientView.layer.sublayers?[0].frame = gradientView.layer.bounds
+        applyImageScale(withScrollView: tableView)
     }
     
     private func styleViews() {
@@ -57,6 +58,23 @@ final class ViewController: UIViewController,
         tableView.register(UINib(nibName: ViewConstants.NibNames.tableCarousel, bundle: nil), forCellReuseIdentifier: ViewConstants.CellIdentifiers.tableCarousel)
         tableView.register(UINib(nibName: ViewConstants.NibNames.buttons, bundle: nil), forCellReuseIdentifier: ViewConstants.CellIdentifiers.buttons)
         tableView.separatorInset.left = 0
+    }
+    
+    private func applyImageScale(withScrollView scrollView: UIScrollView) {
+        whiteBottomView.frame = CGRect(origin: CGPoint(x: 0, y: scrollView.contentSize.height - scrollView.contentOffset.y + 0), size: whiteBottomView.frame.size)
+        
+        let minScale:CGFloat = 1.1
+        let maxScale:CGFloat = 2.0
+        
+        let offset = tableView.contentOffset.y
+        let height = tableView.contentSize.height
+        
+        var scale = (1.0 / height) * offset
+        
+        scale = scale * (maxScale - minScale)
+        scale += minScale
+        
+        imageView.applyScale(scale)
     }
 
     // MARK: -
@@ -146,20 +164,7 @@ final class ViewController: UIViewController,
     // MARK: -
     // MARK: UIScrollViewDelegate
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        whiteBottomView.frame = CGRect(origin: CGPoint(x: 0, y: scrollView.contentSize.height - scrollView.contentOffset.y + 0), size: whiteBottomView.frame.size)
-        
-        let minScale:CGFloat = 1.1
-        let maxScale:CGFloat = 2.0
-        
-        let offset = tableView.contentOffset.y
-        let height = tableView.contentSize.height
-        
-        var scale = (1.0 / height) * offset
-        
-        scale = scale * (maxScale - minScale)
-        scale += minScale
-        
-        imageView.applyScale(scale)
+        applyImageScale(withScrollView: scrollView)
     }
     
     // MARK: -
